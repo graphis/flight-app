@@ -14,7 +14,7 @@ define('VENDORPATH', realpath(__DIR__.'/../vendor').DS);
 
 
 
-//flag to load via composer or standalone for example.
+// flag to load via composer or standalone for example.
 $composer = 1; 
 /**
 * Example for loading the framework via composer or standalone.
@@ -88,11 +88,17 @@ if($composer && file_exists(VENDORPATH.'autoload.php')){
 
 try
 {
-	// set a default route
-	\Flight::route('/', function(){
+	// root route
+	\Flight::route('/zzz', function(){
 	// $app->route('/', function(){
 		echo 'hello world!';
 	});
+
+	// routing wiith a class
+	\Flight::route('/', array('\Controller\Greeting', 'hello'));
+	\Flight::route('/name/@name',
+		array('\Controller\Greeting', 'hello'), true);
+
 
 	// set a named route
 	\Flight::route('/@name', function($name){
