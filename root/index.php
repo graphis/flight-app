@@ -1,135 +1,137 @@
 <?php
 /**
  *
- * Flight index.php
+ * index.php
  *
  */
 
 
+// define paths
+define('DS', DIRECTORY_SEPARATOR);
+// define('FLIGHTPATH', realpath(__DIR__.'/../src').DS);
+define('FLIGHTPATH', realpath(__DIR__.'/../vendor/mikecao/flight/flight').DS); // for starting flight as a framework
+define('VENDORPATH', realpath(__DIR__.'/../vendor').DS);
+
+
+
+//flag to load via composer or standalone for example.
+$composer = 1; 
 /**
- * The directory in which your application specific resources are located.
- * The application directory must contain the bootstrap.php file.
- *
- * @see  http://kohanaframework.org/guide/about.install#application
- */
-$application = '../application';
+* Example for loading the framework via composer or standalone.
+* Flight is PSR-0 compliant 
+*/
+if($composer && file_exists(VENDORPATH.'autoload.php')){
+	/* 
+	* Composer:
+	* installed as a composer package include the composer autoloader and good to go. 
+	* tip: when composer autoloader runs it checks the classmap first so to create 
+	* the class map for faster loading.
+	* run cmd: composer install mmcp/flight --optimize-autoloader | -o
+	* or if installed 
+	* run cmd: composer dump-autoload -o
+	*/
+	require VENDORPATH.'autoload.php';
+	
+} else {
+
+	/**
+	* Standalone:
+	* Using Flight as standalone simply include flight/src/Flight.php and boom.
+	* Alternativly you can include flight/src/autoload.php and good to go.
+	* 
+	* If using this way and composer autoload registered then the Flight autoload
+	* shouldn't run for the framework as composer (classmaped | PSR-0) will take 
+	* care of loading as its the first look up. 
+	* However the Flight autoload still gets registered to handle any paths added by
+	* Flight::path("my/path/to/load/from") instead of making a special case if composer
+	* fallbacks present.
+	*/
+	// print_r( FLIGHTPATH.'autoload.php' );
+
+//	use flight\Engine;
+//	$app = new Engine();
+//	$app->route('/', function(){
+//	    echo 'hello world!';
+//	});
+//	$app->start();
+
+	require FLIGHTPATH.'Flight.php';
+	require FLIGHTPATH.'autoload.php';
+}
 
 
 
-/**
- * Set the PHP error reporting level. If you set this in php.ini, you remove this.
- * @see  http://php.net/error_reporting
- *
- * When developing your application, it is highly recommended to enable notices
- * and strict warnings. Enable them by using: E_ALL | E_STRICT
- *
- * In a production environment, it is safe to ignore notices and strict warnings.
- * Disable them by using: E_ALL ^ E_NOTICE
- *
- * When using a legacy application with PHP >= 5.3, it is recommended to disable
- * deprecated notices. Disable with: E_ALL & ~E_DEPRECATED
- */
-error_reporting(E_ALL | E_STRICT);
+//
+\Flight::set('flight.log_errors', true);
 
-
-// setting up paths
-// Set the full path to the docroot
-define('DOCROOT', realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR);
-
-// Make the application relative to the docroot, for symlink'd index.php
-if ( ! is_dir($application) AND is_dir(DOCROOT.$application))
-	$application = DOCROOT.$application;
-
-// Make the system relative to the docroot, for symlink'd index.php
-if ( ! is_dir($system) AND is_dir(DOCROOT.$system))
-	$system = DOCROOT.$system;
-
-// Define the absolute paths for configured directories
-define('APPPATH', realpath($application).DIRECTORY_SEPARATOR);
-define('SYSPATH', realpath($system).DIRECTORY_SEPARATOR);
-
-// Clean up the configuration vars
-unset($application, $modules, $system);
+// setting up paths 
+\Flight::set('flight.views.path', __DIR__ . '/../app/templates');
 
 
 
+// before and after hooks
+\Flight::before('start', function(&$params, &$output){
+	echo '<hr><pre><code>';
+});
 
-
-
-
-
-
-
-// includes
-// require '../vendor/autoload.php';
-// require 'flight/autoload.php';
-
-// framework method
-use flight\Engine;
-
-$app = new Engine();
-
-$app->route('/', function(){
-    echo 'hello world!';
-	print_r(APPPATH);
-	print_r(SYSPATH);
+\Flight::after('start', function(&$params, &$output){
+	echo '</code></pre><hr>';
 });
 
 
 
 
+// as a framework
+// use flight\Engine;
+// $app = new Engine();
+// use \App\App;
 
-
-
-// views 
-Flight::set('flight.views.path', __DIR__ . '/../application/templates');
-
-
-
-
-
-
-
-
-// Before Flight
-Flight::before('start', function(&$params, &$output){
-	echo '<pre><code>';
-});
-
-// After Flight
-Flight::after('start', function(&$params, &$output){
-	echo '</code></pre>';
-});
-
-
-
-
-
-
-
-
-// Routing
 try
 {
-    // set a default route
-    Flight::route('/', function(){
-        echo 'hello world! -- from route /';
+	// set a default route
+	\Flight::route('/', function(){
+	// $app->route('/', function(){
+		echo 'hello world!';
+	});
+
+	// set a named route
+	\Flight::route('/@name', function($name){
+	// $app->route('/@name', function($name){
+		echo 'hello: '.$name;
+	});
+
+
+	// EXAPLE ROUTES
+	////////////////////////
+
+	// set a default route
+	\Flight::route('/zorro', function(){
+	// $app->route('/zorro', function(){
+        echo 'hello world! -- from route /zorro';
+		
+		$zzz = new \App\App;
+		$zzz2 = $zzz->app();
+		print_r($zzz2);
     });
 
-	// Mappings.
-	Flight::map('notFound', function() {
-		Flight::render('404.php', array());
-	//	Flight::render('hello.php', array('name' => 'Bob'));
-		echo 'Uh oh, page not found. Sorry.';
+	////////////////////////
+
+
+	// set a wildcard catch all route
+	\Flight::route('/*', function(){
+	// $app->route('/*', function(){
+		echo 'hello: wildcard';
 	});
 
 	// start the Framework
-	Flight::start();
+	// $app->start(); 		// as a framework
+	\Flight::start(); 	// as static
 }
 catch (\Exception $e)
 {
-	die($e->getMessage());
+   die($e->getMessage());
 }
+
 
 
 // eof
