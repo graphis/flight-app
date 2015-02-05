@@ -127,10 +127,10 @@ try
 
 
 	// set a wildcard catch all route
-//	\Flight::route('/*', function(){
+	// \Flight::route('/*', function(){
 	// $app->route('/*', function(){
-//		echo 'hello: wildcard';
-//	});
+		// echo 'hello: wildcard';
+	// });
 
 
 
