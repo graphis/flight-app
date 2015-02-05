@@ -1,6 +1,7 @@
 {
 	"require": {
-		"mikecao/flight": "1.2"
+		"mikecao/flight": "1.2",
+		"unlight/sparrow": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {"App\\": "app/classes/"}
