@@ -65,7 +65,7 @@ if($composer && file_exists(VENDORPATH.'autoload.php')){
 \Flight::set('flight.log_errors', true);
 
 // setting up paths 
-\Flight::set('flight.views.path', __DIR__ . '/../app/templates');
+\Flight::set('flight.views.path', __DIR__ . '/../app/views');
 
 
 
@@ -116,13 +116,25 @@ try
 
 	////////////////////////
 
-
-	// set a wildcard catch all route
-	\Flight::route('/*', function(){
-	// $app->route('/*', function(){
-		echo 'hello: wildcard';
+	////////////////////////
+	// Mappings.
+	\Flight::map('notFound', function() {
+		\Flight::render('404.php', array());
+		$messages = array('Aw, crap!', 'Bloody Hell!', 'Uh Oh!', 'Nope, not here.', 'Huh?');
+		echo $messages[array_rand($messages)];
 	});
 
+
+
+	// set a wildcard catch all route
+//	\Flight::route('/*', function(){
+	// $app->route('/*', function(){
+//		echo 'hello: wildcard';
+//	});
+
+
+
+	////////////////////////
 	// start the Framework
 	// $app->start(); 		// as a framework
 	\Flight::start(); 	// as static
