@@ -4,7 +4,8 @@
 		"unlight/sparrow": "dev-master"
 	},
 	"autoload": {
-		"psr-4": {"App\\": "app/classes/"}
+		"psr-4": {"App\\": "app/classes/"},
+		"psr-4": {"Controller\\": "app/controller/"}
 	}
 }
 
