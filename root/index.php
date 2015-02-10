@@ -8,13 +8,24 @@
 
 // define paths
 define('DS', DIRECTORY_SEPARATOR);
+// Set the full path to the docroot
+// define('DOCROOT', realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR);
+
 // define('FLIGHTPATH', realpath(__DIR__.'/../src').DS);
 define('FLIGHTPATH', realpath(__DIR__.'/../vendor/mikecao/flight/flight').DS); // for starting flight as a framework
 define('VENDORPATH', realpath(__DIR__.'/../vendor').DS);
 
+/**
+ * Define the start time of the application, used for profiling.
+ */
+//if ( ! defined('KOHANA_START_TIME'))
+//{
+// define('FLIGHT_START_TIME', microtime(TRUE));
+
+//}
 
 
-//flag to load via composer or standalone for example.
+// flag to load via composer or standalone for example.
 $composer = 1; 
 /**
 * Example for loading the framework via composer or standalone.
@@ -71,11 +82,17 @@ if($composer && file_exists(VENDORPATH.'autoload.php')){
 
 // before and after hooks
 \Flight::before('start', function(&$params, &$output){
-	echo '<hr><pre><code>';
+	// echo '<hr><pre><code>';
+	Flight::set('start', microtime(true));
+	// $start = microtime(true);
 });
 
 \Flight::after('start', function(&$params, &$output){
-	echo '</code></pre><hr>';
+	// echo '</code></pre><hr>';
+	$end = microtime(true);
+	$start = Flight::get('start');
+	$creationtime = ($end - $start);
+	printf("Page created in %.6f seconds.", $creationtime);
 });
 
 
@@ -88,15 +105,25 @@ if($composer && file_exists(VENDORPATH.'autoload.php')){
 
 try
 {
+<<<<<<< HEAD
 	// set a default route
 	\Flight::route('/', function(){
+=======
+	// root route
+	\Flight::route('/zzz', function(){
 	// $app->route('/', function(){
+>>>>>>> FETCH_HEAD
 		echo 'hello world!';
 	});
 
+	// routing wiith a class
+	\Flight::route('/', array('\Controller\Greeting', 'hello'));
+	\Flight::route('/name/@name',
+		array('\Controller\Greeting', 'hello'), true);
+
+
 	// set a named route
 	\Flight::route('/@name', function($name){
-	// $app->route('/@name', function($name){
 		echo 'hello: '.$name;
 	});
 
@@ -106,7 +133,6 @@ try
 
 	// set a default route
 	\Flight::route('/zorro', function(){
-	// $app->route('/zorro', function(){
         echo 'hello world! -- from route /zorro';
 		
 		$zzz = new \App\App;
@@ -119,9 +145,13 @@ try
 	////////////////////////
 	// Mappings.
 	\Flight::map('notFound', function() {
+
+		// set the header
+		http_response_code(404);
+		// header("HTTP/1.0 404 Not Found");
+
+		// 
 		\Flight::render('404.php', array());
-		$messages = array('Aw, crap!', 'Bloody Hell!', 'Uh Oh!', 'Nope, not here.', 'Huh?');
-		echo $messages[array_rand($messages)];
 	});
 
 
