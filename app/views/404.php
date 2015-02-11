@@ -37,7 +37,6 @@ echo 'Sorry';
 
 
 
-define('FLIGHT_END_TIME', microtime(TRUE));
 
 
 // print_r(FLIGHT_START_TIME - FLIGHT_END_TIME);
